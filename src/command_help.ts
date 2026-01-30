@@ -1,5 +1,9 @@
-export function commandHelp() {
-  console.log("Available commands:");
-  console.log("help - Display this help message");
-  console.log("exit - Close the Pokedex");
+import { State } from "./state.js";
+
+export function commandHelp(state: State) {
+  console.log("Welcome to the Pokedex!");
+  console.log("Usage:\n");
+  for (let command of Object.values(state.commands)) {
+    console.log(`${command.name}: ${command.description}`);
+  }
 }

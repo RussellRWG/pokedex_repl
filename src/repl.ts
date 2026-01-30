@@ -1,37 +1,26 @@
 import * as readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
-import { commandExit } from "./command_exit.js";
-import { commandHelp } from "./command_help.js";
+import { type State } from "./state.js";
 
 export function cleanInput(str: string): Array<string> {
   let words = str.trim().toLowerCase().split(" ");
   return words;
 }
 
-export function startREPL() {
-  let rl = readline.createInterface({
-    input: input,
-    output: output,
-    prompt: "Pokedex > ",
-  });
-
-  rl.prompt();
-  rl.on("line", (input) => {
+export function startREPL(state: State) {
+  state.rl.prompt();
+  state.rl.on("line", (input) => {
     let parts = cleanInput(input);
     if (parts[0] === "") {
-      console.log("Please enter a command.");
-      rl.prompt();
+      console.log('Please enter a command. Enter "help" for help.');
     } else {
       let command = parts[0];
-      switch (command) {
-        case "help":
-          commandHelp();
-          break;
-        case "exit":
-          commandExit();
-          break;
+      if (command in state.commands) {
+        state.commands[command].callback(state);
+      } else {
+        console.log('Unrecognized command. Enter "help" for help.');
       }
-      rl.prompt();
     }
+    state.rl.prompt();
   });
 }
