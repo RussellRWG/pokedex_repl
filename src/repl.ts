@@ -7,20 +7,28 @@ export function cleanInput(str: string): Array<string> {
   return words;
 }
 
-export function startREPL(state: State) {
-  state.rl.prompt();
-  state.rl.on("line", (input) => {
-    let parts = cleanInput(input);
-    if (parts[0] === "") {
-      console.log('Please enter a command. Enter "help" for help.');
-    } else {
-      let command = parts[0];
-      if (command in state.commands) {
-        state.commands[command].callback(state);
-      } else {
-        console.log('Unrecognized command. Enter "help" for help.');
+async function processCommand(state: State, input: string): Promise<void> {
+  let parts = cleanInput(input);
+  if (parts[0] === "") {
+    console.log('Please enter a command. Enter "help" for help.');
+  } else {
+    let command = parts[0];
+    if (command in state.commands) {
+      try {
+        await state.commands[command].callback(state);
+      } catch (error) {
+        console.log("Error processing command. Please try again.");
       }
+    } else {
+      console.log('Unrecognized command. Enter "help" for help.');
     }
-    state.rl.prompt();
+  }
+  state.rl.prompt();
+}
+
+export async function startREPL(state: State) {
+  state.rl.prompt();
+  state.rl.on("line", (line) => {
+    void processCommand(state, line);
   });
 }

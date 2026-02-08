@@ -4,4 +4,5 @@ export function commandHelp(state) {
     for (let command of Object.values(state.commands)) {
         console.log(`${command.name}: ${command.description}`);
     }
+    return Promise.resolve();
 }
