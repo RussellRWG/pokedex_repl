@@ -11,7 +11,12 @@ async function processCommand(state, input) {
         let command = parts[0];
         if (command in state.commands) {
             try {
-                await state.commands[command].callback(state);
+                if (parts.length > 1) {
+                    await state.commands[command].callback(state, parts[1]);
+                }
+                else {
+                    await state.commands[command].callback(state);
+                }
             }
             catch (error) {
                 console.log("Error processing command. Please try again.");

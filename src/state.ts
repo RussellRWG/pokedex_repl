@@ -1,13 +1,13 @@
 import { createInterface, type Interface } from "readline";
 import { getCommands } from "./command_registry.js";
 import { stdin as input, stdout as output } from "node:process";
-import { PokeAPI } from "./pokeapi.js";
+import { PokeAPI, Pokemon } from "./pokeapi.js";
 import * as readline from "node:readline/promises";
 
 export type CLICommand = {
   name: string;
   description: string;
-  callback: (state: State) => Promise<void>;
+  callback: (state: State, ...args: string[]) => Promise<void>;
 };
 
 export type State = {
@@ -16,6 +16,7 @@ export type State = {
   pokeapi: PokeAPI;
   nextLocationsURL: string | null;
   prevLocationsURL: string | null;
+  pokedex: Record<string, Pokemon>;
 };
 
 export function initState() {
@@ -32,6 +33,7 @@ export function initState() {
     pokeapi,
     nextLocationsURL: "",
     prevLocationsURL: "",
+    pokedex: {},
   };
   return state;
 }
